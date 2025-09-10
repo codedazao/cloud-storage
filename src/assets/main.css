@@ -1,0 +1,44 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  font-weight: normal;
+}
+img {
+  display: inline-block;
+  vertical-align: middle;
+}
+a cite {
+  font-style: normal;
+  cursor: pointer;
+}
+a {
+  text-decoration: none;
+}
+a:active,
+a:hover {
+  outline: 0;
+}
+input {
+  outline: none;
+}
+
+:root {
+  /*主题色*/
+  --primary: #615ced;
+  --primary01: rgba(97, 92, 237, 0.1);
+  --primary04: rgba(97, 92, 237, 0.4);
+  --primary06: rgba(97, 92, 237, 0.6);
+  --primary-text: #303133;
+  --regular-text: #606266;
+  --secondary-text: #909399;
+  --placeholder-text: #a8abb2;
+  --disabled-text: #c0c4cc;
+  --darker-border: #cdd0d6;
+  --dark-border: #d4d7de;
+  --base-border: #dcdfe6;
+  --light-border: #e4e7ed;
+  --lighter-border: #ebeef5;
+  --extra-light-border: #f2f6fc;
+}
