@@ -1,0 +1,18 @@
+修改用户密码
+接口地址：/updateUserPassword
+存在登录校验：是
+请求类型：POST
+请求参数：
+    id:要修改的用户ID
+    password: 修改后的密码
+成功状态示例
+    {
+        code:200,
+        data:"Id 为 xxx的用户，密码成功修改为 xxx"
+    }
+    
+失败状态示例
+    {
+        code:400,
+        message: "未登录"
+    }

@@ -1,7 +1,10 @@
 import { fileURLToPath, URL } from 'node:url';
-import electron from 'vite-plugin-electron';
+
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
+
+import electron from 'vite-plugin-electron/simple';
+
 import vueDevTools from 'vite-plugin-vue-devtools';
 
 // https://vite.dev/config/
@@ -10,10 +13,20 @@ export default defineConfig({
     vue(),
     vueDevTools(),
     electron({
-      entry: 'electron/index.js',
-      vite: {
-        build: {
-          outDir: './dist',
+      main: {
+        entry: 'electron/index.js',
+        vite: {
+          build: {
+            outDir: './electron/dist',
+          },
+        },
+      },
+      preload: {
+        input: 'electron/preload.js',
+        vite: {
+          build: {
+            outDir: './dist',
+          },
         },
       },
     }),

@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1,
+    "username": "imooc",
+    "password": "123"
+  },
+  {
+    "id": 2,
+    "username": "imooc2",
+    "password": "456"
+  },
+  {
+    "id": 3,
+    "username": "imooc3",
+    "password": "789"
+  },
+  {
+    "id": 4,
+    "username": "imooc4",
+    "password": "abc"
+  }
+]

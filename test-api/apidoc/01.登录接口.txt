@@ -1,0 +1,23 @@
+登录
+接口地址：/login
+存在登录校验：否
+请求类型：POST
+请求参数：
+    username=>账号
+    password=>密码（需要md5加密）
+
+成功状态示例
+    {
+        code:200,
+        data:{
+            time:1719560772,                            // 登录时间
+            token:"2ef9e24c6e197f1bdef508cfe3a48f19",   // 登录令牌
+            userId:1                                    // 用户ID
+        }
+    }
+
+失败状态示例
+    {
+        code:300,
+        message: "账号或密码错误" // 失败原因
+    }
