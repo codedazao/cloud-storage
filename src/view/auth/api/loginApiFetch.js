@@ -40,10 +40,25 @@ export const login = async (username, password) => {
 export const getUserDeatil = async (uid, appendHeaders) => {
   //还原初始的请求头，不然请求头会带一些不该带进去的东西
   $request.interceptor.request = (init) => {
-    let headers = init.headers ?? {};
-    headers = Object.assign(headers, appendHeaders);
-    init.headers = headers;
-    return init;
+    return new Promise((resolve, reject) => {
+      if (window.isLogin) {
+        tools.ipcInvoke('readFileSync', 'loginData.json').then((res) => {
+          const { userId, token, time } = JSON.parse(res);
+          let headers = init.headers
+            ? Object.assign({}, init.headers, {
+                'x-id': userId,
+                'x-time': time,
+                'x-token': token,
+              })
+            : {};
+          headers = Object.assign({}, headers, appendHeaders);
+          init.headers = headers;
+          resolve(init);
+        });
+      } else {
+        resolve(init);
+      }
+    });
   };
   const response = await $request.get('/getUserDetail', { id: uid });
   return response;

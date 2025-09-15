@@ -2,8 +2,7 @@
 import { onBeforeUnmount, ref } from 'vue';
 import GoogleInput from '@/components/GoogleInput.vue';
 import CorrugationButton from '@/components/CorrugationButton.vue';
-
-import { login, getUserDeatil } from '@/view/auth/api/loginApi';
+import { login } from '@/view/auth/api/loginApiFetch';
 
 const backMap = ['01', '02', '03', '04', '05', '06', '07', '08'];
 // 获取0-7的整数随机数
@@ -30,10 +29,30 @@ const submit = async () => {
   const loginres = await login(username.value, password.value);
   if (loginres.code === 200) {
     const { userId, time, token } = loginres.data;
-    const userRes = await getUserDeatil(1, {
-      'x-id': userId,
-      'x-time': time,
-      'x-token': token,
+    tools.ipcInvoke(
+      'writeFileSync',
+      'loginData.json',
+      JSON.stringify({
+        userId,
+        time,
+        token,
+      }),
+    );
+    tools.ipcSend('popDiaglog', {
+      content: '登录成功',
+      title: '我的云盘',
+      type: 'info',
+      isNativeDiaglog: true,
+    });
+    window.isLogin = true;
+    //关闭登录窗口
+    tools.ipcInvoke('closelogin');
+  } else {
+    tools.ipcSend('popDiaglog', {
+      content: `登录失败 ${loginres.message}`,
+      title: '我的云盘',
+      type: 'error',
+      isNativeDiaglog: true,
     });
   }
 };
@@ -53,8 +72,8 @@ const submit = async () => {
       </div>
       <div class="login-box">
         <button style="position: absolute; top: 10px; right: 30px">-</button>
-        <div class="title">欢迎登录！慕课网</div>
-        <div class="desc">Electron+Vue3+对象存储课程</div>
+        <div class="title">欢迎登录！</div>
+        <div class="desc">个人云盘</div>
         <div class="form">
           <div class="input-box">
             <div class="input-item">

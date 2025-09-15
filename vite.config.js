@@ -17,7 +17,10 @@ export default defineConfig({
         entry: 'electron/index.js',
         vite: {
           build: {
-            outDir: './electron/dist',
+            outDir: './dist',
+            rollupOptions: {
+              external: ['ffi-rs'],
+            },
           },
         },
       },

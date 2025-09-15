@@ -9,7 +9,7 @@ export default class FRequest {
     request: (init) => init,
     response: {
       convert(res) {
-        return res;
+        return res.response;
       },
       next(res) {
         return res;
@@ -53,35 +53,17 @@ export default class FRequest {
   request(url, init) {
     return new Promise((resolve, reject) => {
       init = this.interceptor.request(init);
-      if (init instanceof Promise) {
-        init.then((init) => {
-          fetch(url, init)
-            .then((res) => {
-              const response = this.interceptor.response.convert(res);
-              return response;
-            })
-            .then((res) => {
-              this.interceptor.response.next(res);
-              resolve(res);
-            })
-            .catch(() => {
-              reject();
-            });
-        });
-      } else {
-        fetch(url, init)
-          .then((res) => {
-            const response = this.interceptor.response.convert(res);
-            return response;
-          })
-          .then((res) => {
-            this.interceptor.response.next(res);
-            resolve(res);
-          })
-          .catch(() => {
-            reject();
-          });
+      const xhr = new XMLHttpRequest();
+      xhr.open(init.method, url, true);
+      for (let k in init.headers) {
+        xhr.setRequestHeader(k, init.headers[k]);
       }
+      xhr.onload = () => {
+        const response = this.interceptor.convert(xhr);
+        this.interceptor.response.next(response);
+        resolve(response);
+      };
+      xhr.send(init.body ?? null);
     });
   }
 

@@ -1,35 +1,88 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain } from 'electron';
 import { fileURLToPath } from 'url';
 import path from 'path';
-import { platform } from 'os';
-import { open, DataType, define, close } from 'ffi-rs';
+import fs from 'node:fs';
+import { platform } from 'node:os';
+import { DataType, open, define } from 'ffi-rs';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const winMessageBox = (content, title) => {
-  const dynamicLib = platform() === 'win32' ? './cloud-stroage-native.dll' : './libsum.so';
+const loadlib = (libname) => {
+  const dynamicLib = platform() === 'win32' ? `./${libname}.dll` : './libsum.so';
   open({
-    library: 'cloud-stroage-native',
+    library: libname,
     path: dynamicLib,
   });
-
   const res = define({
     winMessageBox: {
-      library: 'cloud-stroage-native',
+      library: libname,
       retType: DataType.Void,
       paramsType: [DataType.String, DataType.String],
     },
   });
-  res.winMessageBox([content, title]);
-  close('cloud-stroage-native');
+  return res;
 };
+let res = loadlib('cloud-stroage-native');
+let loginwin;
 
 ipcMain.on('popDiaglog', (_, diginfo) => {
-  const { content, title } = diginfo;
-  winMessageBox(content, title);
+  const { content, title, type, isNativeDiaglog } = diginfo;
+  if (isNativeDiaglog === false) {
+    dialog.showMessageBox({
+      type,
+      title,
+      message: content,
+      buttons: ['确定'],
+    });
+  } else {
+    res.winMessageBox([content, title]);
+  }
 });
 
-console.log(path.join(__dirname, '../dist/preload.mjs'));
+ipcMain.handle('readFileSync', (_, url, encoding = 'utf8') => {
+  return fs.readFileSync(path.join(__dirname, url), {
+    encoding,
+  });
+});
+
+ipcMain.handle('writeFileSync', (_, url, data, encoding = 'utf8') => {
+  return fs.writeFileSync(path.join(__dirname, url), data, {
+    encoding,
+  });
+});
+
+ipcMain.handle('existsSync', (_, url) => {
+  return fs.existsSync(path.join(__dirname, url));
+});
+
+const createIndexWindow = () => {
+  const win = new BrowserWindow({
+    width: 888,
+    height: 537,
+    show: false, //解决初始化白屏问题
+    resizable: false, // 禁止调整窗口大小
+    frame: false, // 可选，取消窗口自带的关闭、最小化等按钮
+    webPreferences: {
+      preload: path.join(__dirname, '../dist/preload.mjs'),
+      webSecurity: false,
+    },
+  });
+  win.loadURL(process.env['VITE_DEV_SERVER_URL'] + 'index');
+  win.setMenu(null);
+  win.setMaximizable(false);
+  win.setResizable(false);
+  if (process.env.NODE_ENV === 'development') {
+    win.webContents.openDevTools();
+  }
+  win.once('ready-to-show', () => {
+    win.show();
+  });
+};
+ipcMain.handle('closelogin', () => {
+  loginwin.close();
+  createIndexWindow();
+});
 const createMainWindow = () => {
   const win = new BrowserWindow({
     width: 888,
@@ -43,7 +96,7 @@ const createMainWindow = () => {
     },
   });
   // eslint-disable-next-line no-undef
-  win.loadURL(process.env['VITE_DEV_SERVER_URL']);
+  win.loadURL(process.env['VITE_DEV_SERVER_URL'] + 'auth/login');
   win.setMenu(null);
   win.setMaximizable(false);
   win.setResizable(false);
@@ -53,6 +106,7 @@ const createMainWindow = () => {
   win.once('ready-to-show', () => {
     win.show();
   });
+  loginwin = win;
 };
 app.whenReady().then(() => {
   createMainWindow();
