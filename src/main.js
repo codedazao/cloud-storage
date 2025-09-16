@@ -1,7 +1,9 @@
 import '@/assets/base.css';
 import '@/assets/main.css';
+import '@/assets/dark.css';
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import '@opentiny/vue-theme/dark-theme-index.css';
 
 import App from './App.vue';
 import router from './router';

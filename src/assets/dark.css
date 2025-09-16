@@ -1,0 +1,12 @@
+:root {
+  /* 亮色模式变量 */
+  --header-background: white; /* 文本颜色 */
+  --main-background: #fefefe; /* 背景色 */
+  --text-color: #000;
+}
+
+html.dark {
+  --header-background: #242424;
+  --main-background: #181818;
+  --text-color: white;
+}

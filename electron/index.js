@@ -1,4 +1,4 @@
-import { app, BrowserWindow, dialog, ipcMain } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, nativeImage, Tray, Menu } from 'electron';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import fs from 'node:fs';
@@ -25,7 +25,7 @@ const loadlib = (libname) => {
 };
 let res = loadlib('cloud-stroage-native');
 let loginwin;
-
+let mainwin;
 ipcMain.on('popDiaglog', (_, diginfo) => {
   const { content, title, type, isNativeDiaglog } = diginfo;
   if (isNativeDiaglog === false) {
@@ -70,14 +70,19 @@ const createIndexWindow = () => {
   });
   win.loadURL(process.env['VITE_DEV_SERVER_URL'] + 'index');
   win.setMenu(null);
-  win.setMaximizable(false);
-  win.setResizable(false);
+  win.setMaximizable(true);
+  win.setResizable(true);
   if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools();
   }
   win.once('ready-to-show', () => {
     win.show();
   });
+  win.on('close', (event) => {
+    event.preventDefault();
+    win.hide();
+  });
+  mainwin = win;
 };
 ipcMain.handle('closelogin', () => {
   loginwin.close();
@@ -88,7 +93,7 @@ const createMainWindow = () => {
     width: 888,
     height: 537,
     show: false, //解决初始化白屏问题
-    resizable: false, // 禁止调整窗口大小
+    resizable: true, // 禁止调整窗口大小
     frame: false, // 可选，取消窗口自带的关闭、最小化等按钮
     webPreferences: {
       preload: path.join(__dirname, '../dist/preload.mjs'),
@@ -106,8 +111,39 @@ const createMainWindow = () => {
   win.once('ready-to-show', () => {
     win.show();
   });
+
   loginwin = win;
 };
 app.whenReady().then(() => {
   createMainWindow();
+  //设置托盘图标
+  const trayicon = nativeImage.createFromPath(path.join(__dirname, 'metaso.cn-favicon.ico'));
+  const tray = Tray(trayicon);
+  tray.on('click', () => {
+    if (mainwin !== null) {
+      if (mainwin.isVisible()) {
+        mainwin.hide();
+      } else {
+        mainwin.show();
+      }
+    }
+  });
+  const menu = Menu.buildFromTemplate([
+    {
+      label: '打开主界面',
+      click: () => {
+        if (mainwin) {
+          mainwin.show();
+        }
+      },
+    },
+    {
+      label: '退出',
+      click: () => {
+        app.exit();
+      },
+    },
+  ]);
+  tray.setContextMenu(menu);
+  tray.setToolTip('大枣云盘');
 });

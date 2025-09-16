@@ -59,7 +59,7 @@ const submit = async () => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="container" id="candrag">
     <div class="login-window">
       <div class="background">
         <template v-for="(item, index) in backMap">
@@ -83,7 +83,7 @@ const submit = async () => {
               <GoogleInput v-model="password" label="密码" type="password" />
             </div>
           </div>
-          <div class="submit no-drag">
+          <div class="submit">
             <CorrugationButton @click="submit">登录</CorrugationButton>
           </div>
         </div>
@@ -93,9 +93,6 @@ const submit = async () => {
 </template>
 
 <style scoped lang="scss">
-.no-drag {
-  -webkit-app-region: no-drag;
-}
 .container {
   background: transparent;
   width: 100%;
@@ -150,6 +147,7 @@ const submit = async () => {
       color: var(--placeholder-text);
     }
     .form {
+      -webkit-app-region: drag;
       margin-top: 20px;
       .input-box {
         -webkit-app-region: no-drag;
@@ -158,6 +156,7 @@ const submit = async () => {
         }
       }
       .submit {
+        -webkit-app-region: no-drag;
         margin-top: 40px;
       }
     }
