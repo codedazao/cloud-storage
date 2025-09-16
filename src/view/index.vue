@@ -1,30 +1,97 @@
 <script setup>
 import { TinyContainer, TinyButton, TinyTooltip } from '@opentiny/vue';
-import { IconApplication } from '@opentiny/vue-icon';
+import {
+  IconApplication,
+  IconDelegatedProcessing,
+  IconCloudUpload,
+  IconFiletext,
+  IconMore,
+  IconClose,
+  IconMinus,
+  IconFullscreenRight,
+} from '@opentiny/vue-icon';
+import router from '@/router';
 import { ref } from 'vue';
 import { useDark, useToggle } from '@vueuse/core';
+import { RouterView } from 'vue-router';
 const isDark = useDark();
 
 const toggleDark = useToggle(isDark);
 const changeDark = () => toggleDark();
 const TinyAppliction = IconApplication();
+const TinyPeople = IconDelegatedProcessing();
+const TinyCloud = IconCloudUpload();
+const TinyFileText = IconFiletext();
+const TinyMore = IconMore();
+const TinyClose = IconClose();
+const TinyMin = IconMinus();
+const TinyFullScreen = IconFullscreenRight();
 const buttonType = ref({
-  homeIndex: 'info',
+  home: 'info',
   people: 'text',
   cloud: 'text',
   knowledgebase: 'text',
   more: 'text',
 });
-const nowactive = ref('首页');
+
+const chineselang = {
+  home: '首页',
+  people: '人员',
+  cloud: '云盘',
+  knowledgebase: '知识库',
+  more: '更多',
+};
+const currentrouter = ref('首页');
+
+const changerouter = (routername) => {
+  router.push(routername);
+  const allKeys = Object.keys(buttonType.value);
+  currentrouter.value = chineselang[routername];
+  allKeys.forEach((key) => {
+    buttonType.value[key] = key === routername ? 'info' : 'text';
+  });
+};
+
+const windowClose = () => {
+  tools.ipcInvoke('windowClose');
+};
+
+const windowMin = () => {
+  tools.ipcInvoke('windowMin');
+};
+
+const windowFullScreen = () => {
+  tools.ipcInvoke('windowFullScreen');
+};
 </script>
 
 <template>
   <div class="container">
-    <tiny-container pattern="default" header-height="64px" aside-width="78px">
+    <tiny-container pattern="default" header-height="50px" aside-width="55px">
       <template #header>
         <div class="header">
-          <div class="text">{{ nowactive }}</div>
-          <!-- <tiny-button type="primary" @click="changeDark" class="no-drag"> 主要按钮 </tiny-button> -->
+          <div></div>
+          <div class="text">{{ currentrouter }}</div>
+          <div class="windowControl no-drag">
+            <tiny-button
+              @click="windowClose"
+              reset-time="1"
+              type="text"
+              :icon="TinyClose"
+            ></tiny-button>
+            <tiny-button
+              @click="windowFullScreen"
+              reset-time="1"
+              type="text"
+              :icon="TinyFullScreen"
+            ></tiny-button>
+            <tiny-button
+              @click="windowMin"
+              reset-time="1"
+              type="text"
+              :icon="TinyMin"
+            ></tiny-button>
+          </div>
         </div>
       </template>
       <template #aside>
@@ -33,36 +100,41 @@ const nowactive = ref('首页');
             <tiny-tooltip class="item" effect="dark" content="首页" placement="right">
               <tiny-button
                 reset-time="1"
-                :type="buttonType.homeIndex"
+                :type="buttonType.home"
                 :icon="TinyAppliction"
+                @click="changerouter('home')"
               ></tiny-button>
             </tiny-tooltip>
             <tiny-tooltip class="item" effect="dark" content="人员" placement="right">
               <tiny-button
                 reset-time="1"
                 :type="buttonType.people"
-                :icon="TinyAppliction"
+                :icon="TinyPeople"
+                @click="changerouter('people')"
               ></tiny-button>
             </tiny-tooltip>
             <tiny-tooltip class="item" effect="dark" content="云盘" placement="right">
               <tiny-button
                 reset-time="1"
                 :type="buttonType.cloud"
-                :icon="TinyAppliction"
+                :icon="TinyCloud"
+                @click="changerouter('cloud')"
               ></tiny-button>
             </tiny-tooltip>
             <tiny-tooltip class="item" effect="dark" content="知识库" placement="right">
               <tiny-button
                 reset-time="1"
                 :type="buttonType.knowledgebase"
-                :icon="TinyAppliction"
+                :icon="TinyFileText"
+                @click="changerouter('knowledgebase')"
               ></tiny-button>
             </tiny-tooltip>
             <tiny-tooltip class="item" effect="dark" content="更多" placement="right">
               <tiny-button
                 reset-time="1"
                 :type="buttonType.more"
-                :icon="TinyAppliction"
+                :icon="TinyMore"
+                @click="changerouter('more')"
               ></tiny-button>
             </tiny-tooltip>
           </div>
@@ -71,7 +143,7 @@ const nowactive = ref('首页');
         </div>
       </template>
       <div class="main no-drag">
-        <router-view></router-view>
+        <RouterView />
       </div>
     </tiny-container>
   </div>
@@ -90,10 +162,17 @@ const nowactive = ref('首页');
   color: var(--text-color);
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: space-between;
+
   .text {
     text-align: center;
-    line-height: 64px;
+    line-height: 50px;
+  }
+  .windowControl {
+    position: relative;
+    right: 20px;
+    display: flex;
+    flex-direction: row-reverse;
   }
 }
 

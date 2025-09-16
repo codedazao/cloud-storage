@@ -56,6 +56,16 @@ ipcMain.handle('existsSync', (_, url) => {
   return fs.existsSync(path.join(__dirname, url));
 });
 
+ipcMain.handle('windowMin', () => {
+  if (mainwin) mainwin.minimize();
+});
+ipcMain.handle('windowClose', () => {
+  if (mainwin) mainwin.close();
+});
+ipcMain.handle('windowFullScreen', () => {
+  if (mainwin) mainwin.maximize();
+});
+
 const createIndexWindow = () => {
   const win = new BrowserWindow({
     width: 888,
@@ -71,6 +81,7 @@ const createIndexWindow = () => {
   win.loadURL(process.env['VITE_DEV_SERVER_URL'] + 'index');
   win.setMenu(null);
   win.setMaximizable(true);
+  win.setMinimumSize(800, 500);
   win.setResizable(true);
   if (process.env.NODE_ENV === 'development') {
     win.webContents.openDevTools();
