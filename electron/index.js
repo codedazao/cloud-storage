@@ -78,7 +78,7 @@ const createIndexWindow = () => {
       webSecurity: false,
     },
   });
-  win.loadURL(process.env['VITE_DEV_SERVER_URL'] + 'index');
+  win.loadURL(process.env['VITE_DEV_SERVER_URL'] + 'index/home');
   win.setMenu(null);
   win.setMaximizable(true);
   win.setMinimumSize(800, 500);

@@ -44,7 +44,7 @@ const chineselang = {
 const currentrouter = ref('首页');
 
 const changerouter = (routername) => {
-  router.push(routername);
+  router.push('/index/' + routername);
   const allKeys = Object.keys(buttonType.value);
   currentrouter.value = chineselang[routername];
   allKeys.forEach((key) => {
@@ -75,19 +75,19 @@ const windowFullScreen = () => {
           <div class="windowControl no-drag">
             <tiny-button
               @click="windowClose"
-              reset-time="1"
+              reset-time="'1'"
               type="text"
               :icon="TinyClose"
             ></tiny-button>
             <tiny-button
               @click="windowFullScreen"
-              reset-time="1"
+              reset-time="'1'"
               type="text"
               :icon="TinyFullScreen"
             ></tiny-button>
             <tiny-button
               @click="windowMin"
-              reset-time="1"
+              reset-time="'1'"
               type="text"
               :icon="TinyMin"
             ></tiny-button>
@@ -99,7 +99,7 @@ const windowFullScreen = () => {
           <div class="buttongrouptop no-drag">
             <tiny-tooltip class="item" effect="dark" content="首页" placement="right">
               <tiny-button
-                reset-time="1"
+                reset-time="'1'"
                 :type="buttonType.home"
                 :icon="TinyAppliction"
                 @click="changerouter('home')"
@@ -107,7 +107,7 @@ const windowFullScreen = () => {
             </tiny-tooltip>
             <tiny-tooltip class="item" effect="dark" content="人员" placement="right">
               <tiny-button
-                reset-time="1"
+                reset-time="'1'"
                 :type="buttonType.people"
                 :icon="TinyPeople"
                 @click="changerouter('people')"
@@ -115,7 +115,7 @@ const windowFullScreen = () => {
             </tiny-tooltip>
             <tiny-tooltip class="item" effect="dark" content="云盘" placement="right">
               <tiny-button
-                reset-time="1"
+                reset-time="'1'"
                 :type="buttonType.cloud"
                 :icon="TinyCloud"
                 @click="changerouter('cloud')"
@@ -123,7 +123,7 @@ const windowFullScreen = () => {
             </tiny-tooltip>
             <tiny-tooltip class="item" effect="dark" content="知识库" placement="right">
               <tiny-button
-                reset-time="1"
+                reset-time="'1'"
                 :type="buttonType.knowledgebase"
                 :icon="TinyFileText"
                 @click="changerouter('knowledgebase')"
@@ -131,7 +131,7 @@ const windowFullScreen = () => {
             </tiny-tooltip>
             <tiny-tooltip class="item" effect="dark" content="更多" placement="right">
               <tiny-button
-                reset-time="1"
+                reset-time="'1'"
                 :type="buttonType.more"
                 :icon="TinyMore"
                 @click="changerouter('more')"
@@ -143,7 +143,7 @@ const windowFullScreen = () => {
         </div>
       </template>
       <div class="main no-drag">
-        <RouterView />
+        <router-view />
       </div>
     </tiny-container>
   </div>
@@ -210,5 +210,6 @@ const windowFullScreen = () => {
   color: var(--text-color);
   width: 100%;
   height: 100%;
+  user-select: none;
 }
 </style>

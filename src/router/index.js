@@ -15,11 +15,11 @@ const router = createRouter({
       component: () => Index,
       children: [
         {
-          path: '/home',
+          path: 'home',
           component: () => Home,
         },
         {
-          path: '/people',
+          path: 'people',
           component: () => people,
         },
       ],
